@@ -9,8 +9,9 @@ const { LIMITS } = require('../constants');
 const getDailyWords = asyncHandler(async (req, res) => {
   const page = parseInt(req.query.page, 10) || 1;
   const limit = parseInt(req.query.limit, 10) || LIMITS.DAILY_WORDS_PER_PAGE;
+  const todayOnly = req.query.today === 'true';
 
-  const result = await dailyWordService.getDailyWords(page, limit);
+  const result = await dailyWordService.getDailyWords(page, limit, todayOnly);
 
   ApiResponse.success(res, {
     data: result.words,

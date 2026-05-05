@@ -190,7 +190,7 @@ export default function DailyWord() {
             <div>
               <h3 className="section-title">Explore More Words</h3>
               <p className="section-subtitle">
-                {total > 0 ? `Showing ${startIdx}–${endIdx} of ${total} words` : 'Loading...'}
+                {total > 0 ? `Showing ${startIdx}–${endIdx} of ${total} words added today` : 'Loading...'}
               </p>
             </div>
           </div>

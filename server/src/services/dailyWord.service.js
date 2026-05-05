@@ -176,16 +176,18 @@ function getExpiryDate(fetchDay) {
 
 /**
  * Get paginated daily words (newest first).
+ * If todayOnly is true, only return words fetched today.
  */
-async function getDailyWords(page = 1, limit = LIMITS.DAILY_WORDS_PER_PAGE) {
+async function getDailyWords(page = 1, limit = LIMITS.DAILY_WORDS_PER_PAGE, todayOnly = false) {
   const skip = (page - 1) * limit;
+  const filter = todayOnly ? { fetchDay: getTodayString() } : {};
   const [words, total] = await Promise.all([
-    DailyWord.find()
+    DailyWord.find(filter)
       .sort({ fetchedAt: -1 })
       .skip(skip)
       .limit(limit)
       .lean(),
-    DailyWord.countDocuments(),
+    DailyWord.countDocuments(filter),
   ]);
 
   return {

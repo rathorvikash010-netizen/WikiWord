@@ -111,7 +111,7 @@ export const words = {
 
 // ──── Daily Words (new — paginated shared words) ────
 export const dailyWords = {
-  get: (page = 1, limit = 6) => request(`/daily-words?page=${page}&limit=${limit}`),
+  get: (page = 1, limit = 6, todayOnly = false) => request(`/daily-words?page=${page}&limit=${limit}${todayOnly ? '&today=true' : ''}`),
   getAll: () => request('/daily-words/all'),
   getWordOfDay: () => request('/daily-words/word-of-day'),
 };

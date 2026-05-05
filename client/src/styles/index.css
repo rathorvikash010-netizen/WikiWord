@@ -1573,7 +1573,7 @@ h6 { font-size: 0.875rem; }
 
 .landing-features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-lg);
   margin-top: var(--space-3xl);
 }

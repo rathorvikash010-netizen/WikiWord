@@ -63,7 +63,7 @@ export function AppProvider({ children }) {
 
   const loadDailyWords = async (page = 1) => {
     try {
-      const res = await api.dailyWords.get(page, 6);
+      const res = await api.dailyWords.get(page, 6, true);
       setDailyWords(res.data || []);
       setDailyWordsMeta(res.meta || { page: 1, limit: 6, total: 0, totalPages: 0 });
     } catch (err) {
@@ -85,7 +85,7 @@ export function AppProvider({ children }) {
         quizRes,
         learnedRes,
       ] = await Promise.all([
-        api.dailyWords.get(1, 6),
+        api.dailyWords.get(1, 6, true),
         api.bookmarks.getAll(),
         api.revision.getAll(),
         api.streak.get(),
