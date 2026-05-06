@@ -71,16 +71,12 @@ connectDB().then(async () => {
     }
   }
 
-  // Auto-populate daily words from Free Dictionary API (idempotent — skips if already fetched today)
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`\n[START] Edicto API running on port ${PORT} [${env.NODE_ENV}]`);
+    console.log(`   https://edicto.onrender.com/api/health\n`);
+  });
+
   const { fetchAndStoreDailyWords, backfillCategories } = require('./src/services/dailyWord.service');
-  await fetchAndStoreDailyWords();
-
-  // Backfill category/difficulty for existing words that don't have them
-  await backfillCategories();
-
-  // Also run the old populator for backwards compatibility with existing Word model
-  const { populateWords } = require('./src/services/wordPopulator.service');
-  await populateWords();
 
   // ──── Cron: Fetch new daily words at midnight every day ────
   cron.schedule('0 0 * * *', async () => {
@@ -93,8 +89,23 @@ connectDB().then(async () => {
   });
   console.log('[CRON] Daily word cron job scheduled (runs at midnight)');
 
-  app.listen(PORT, () => {
-    console.log(`\n[START] Edicto API running on port ${PORT} [${env.NODE_ENV}]`);
-    console.log(`   https://edicto.onrender.com/api/health\n`);
-  });
+  // Run initialization tasks in the background so they don't block Render's port binding timeout
+  (async () => {
+    try {
+      // Auto-populate daily words from Free Dictionary API (idempotent — skips if already fetched today)
+      await fetchAndStoreDailyWords();
+
+      // Backfill category/difficulty for existing words that don't have them
+      await backfillCategories();
+
+      // Also run the old populator for backwards compatibility with existing Word model
+      const { populateWords } = require('./src/services/wordPopulator.service');
+      await populateWords();
+    } catch (err) {
+      console.error('[FAIL] Background initialization tasks failed:', err.message);
+    }
+  })();
+}).catch((err) => {
+  console.error('[FATAL] Server startup error:', err);
+  process.exit(1);
 });
